@@ -30,7 +30,7 @@ jobs:
       - name: Deploy to the VM
         run: |
           mkdir -p ~/.ssh
-          # Try base64 decode first, fallback to raw key
+          # Try base64 decode first, fallback to raw key (key should include BEGIN/END markers)
           if echo "${{ secrets.SSH_PRIVATE_KEY }}" | base64 -d > ~/.ssh/deploy_key 2>/dev/null; then
             echo "Decoded base64 key"
           else
