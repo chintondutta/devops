@@ -2,6 +2,9 @@ FROM oven/bun:1
 
 WORKDIR /usr/src/app
 
+# Install OpenSSL for Prisma
+RUN apt-get update && apt-get install -y openssl && rm -rf /var/lib/apt/lists/*
+
 COPY ./packages ./packages 
 COPY ./bun.lock ./bun.lock
 
@@ -15,4 +18,4 @@ RUN bun run db:generate
 
 EXPOSE 8081
 
-CMD ["bun", "run", "start:websocket"]  
+CMD ["bun", "run", "start:websocket"]
