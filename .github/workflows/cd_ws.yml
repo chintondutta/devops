@@ -22,3 +22,10 @@ jobs:
           file: ./docker/Dockerfile.ws
           push: true
           tags: chintondutta/devops-ws:${{ github.sha }}
+
+      
+      -name: Deploy to the VM
+        run: |
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" &> ~/ssh_key
+          chmod 700 /home/runner/ssh_key
+          ssh -o StrictHostKeyChecking=no -i ~/ssh_key root@13.200.222.81 -t "docker stop devops-ws && docker run --name devops-ws -d -p 8081:8081 chintondutta/devops-ws:${{ github.sha }}"
