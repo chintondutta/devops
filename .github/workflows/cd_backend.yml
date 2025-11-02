@@ -27,8 +27,8 @@ jobs:
           push: true
           tags: chintondutta/devops-backend:${{ github.sha }}
 
-      -name: Deploy to the VM
+      - name: Deploy to the VM
         run: |
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" &> ~/ssh_key
-          chmod 700 /home/runner/ssh_key
-          ssh -o StrictHostKeyChecking=no -i ~/ssh_key root@13.200.222.81 -t "docker stop devops-backend && docker run --name devops-backend -d -p 8080:8080 chintondutta/devops-backend:${{ github.sha }}"
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/ssh_key
+          chmod 600 ~/ssh_key
+          ssh -o StrictHostKeyChecking=no -i ~/ssh_key ubuntu@ec2-13-200-222-81.ap-south-1.compute.amazonaws.com "sudo docker stop devops-backend || true; sudo docker rm devops-backend || true; sudo docker run --name devops-backend -d -p 8080:8080 chintondutta/devops-backend:${{ github.sha }}"
