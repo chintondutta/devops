@@ -30,6 +30,11 @@ jobs:
       - name: Deploy to the VM
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" | tr -d '\r' > ~/.ssh/deploy_key
+          # Try base64 decode first, fallback to raw key
+          if echo "${{ secrets.SSH_PRIVATE_KEY }}" | base64 -d > ~/.ssh/deploy_key 2>/dev/null; then
+            echo "Decoded base64 key"
+          else
+            echo "${{ secrets.SSH_PRIVATE_KEY }}" | tr -d '\r' > ~/.ssh/deploy_key
+          fi
           chmod 600 ~/.ssh/deploy_key
           ssh -o StrictHostKeyChecking=no -i ~/.ssh/deploy_key ubuntu@ec2-13-200-222-81.ap-south-1.compute.amazonaws.com "sudo docker stop devops-backend || true; sudo docker rm devops-backend || true; sudo docker run --name devops-backend -d -p 8080:8080 chintondutta/devops-backend:${{ github.sha }}"
